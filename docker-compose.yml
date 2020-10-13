@@ -1,0 +1,43 @@
+# Use root/example as user/password credentials
+version: '3.1'
+
+services:
+  admin-server:
+    image: schottkey/springboot-admin
+    restart: always
+    ports:
+      - 9003:9003
+    env_file:
+      - .env
+
+
+  mongo:
+    image: mongo
+    restart: always
+    env_file:
+      .env
+    volumes:
+      - /mongodb_data:/data/db
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongo
+    env_file:
+      .env
+
+  client-service:
+    image: schottkey/user-service-prod
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - admin-server
+      - mongo
+    env_file:
+      .env
+
+
